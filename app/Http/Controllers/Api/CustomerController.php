@@ -16,8 +16,15 @@ class CustomerController extends Controller
     public function index()
     {
         //
-        $customers = Customer::orderBy('id','desc')->get();
-        return response()->json($customers);
+        try {
+            $customers = Customer::orderBy('id', 'desc')->get();
+            $response['data'] = $customers;
+            $response['message'] = 'Load list customers';
+            $response['status'] = 200;
+            return response()->json($response,200);
+        } catch (\Exception $e) {
+            response()->json($e->getMessage(),400);
+        }
     }
 
     /**
@@ -58,11 +65,11 @@ class CustomerController extends Controller
             $response['data'] = $customer;
             $response['message'] = 'Register success';
             $response['status'] = 201;
-            return response()->json($response);
+            return response()->json($response,201);
         } catch (\Exception $e) {
             $response['message'] = $e->getMessage();
             $response['status'] = 401;
-            return response()->json($response);
+            return response()->json($response,404);
         }
 
     }
