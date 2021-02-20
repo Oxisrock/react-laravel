@@ -21,5 +21,9 @@ Route::get('/customer/list', 'App\Http\Controllers\Api\CustomerController@index'
 
 Route::post('/customer/create', 'App\Http\Controllers\Api\CustomerController@store');
 
-Route::get('/customer/', 'App\Http\Controllers\Api\CustomerController@store');
 
+Route::get('/customer/get/{id}', 'App\Http\Controllers\Api\CustomerController@show');
+
+Route::put('/customer/update/{id}', 'App\Http\Controllers\Api\CustomerController@update');
+
+Route::delete('/customer/delete/{id}', 'App\Http\Controllers\Api\CustomerController@destroy');

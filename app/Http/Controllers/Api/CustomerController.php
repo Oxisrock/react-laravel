@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use Illuminate\Http\Request;
+use phpDocumentor\Reflection\Types\Object_;
 
 class CustomerController extends Controller
 {
@@ -64,13 +65,14 @@ class CustomerController extends Controller
             $customer->save();
             $response['data'] = $customer;
             $response['message'] = 'Register success';
+            $response['success'] = true;
             $response['status'] = 201;
-            return response()->json($response,201);
         } catch (\Exception $e) {
             $response['message'] = $e->getMessage();
             $response['status'] = 401;
-            return response()->json($response,404);
+            $response['success'] = false;
         }
+        return response()->json($response);
 
     }
 
@@ -83,8 +85,26 @@ class CustomerController extends Controller
     public function show($id)
     {
         //
-        $customer = Customer::findOrFail($id);
-        return response()->json($customer);
+        try {
+
+            $customer = Customer::findOrFail($id);
+
+            if ($customer) {
+                $response['data'] = $customer;
+                $response['message'] = "Load successful";
+                $response['success'] = true;
+            }
+            else {
+                $response['data'] = null;
+                $response['message'] = "Not found data id => $id";
+                $response['success'] = false;
+            }
+
+        } catch (\Exception $e) {
+            $response['message'] = $e->getMessage();
+            $response['success'] = false;
+        }
+        return response()->json($response);
     }
 
     /**
@@ -108,16 +128,24 @@ class CustomerController extends Controller
     public function update(Request $request, $id)
     {
         //
-        $customer = Customer::findOrFail($id);
-        $customer->first_name = $request->first_name;
-        $customer->last_name = $request->last_name;
-        $customer->dni = $request->dni;
-        $customer->email = $request->email;
-        $customer->city = $request->city;
-        $customer->direction = $request->direction;
-        $customer->phone = $request->phone;
-        $customer->save();
-        return response()->json($customer);
+        try {
+            $customer['first_name'] = $request->first_name;
+            $customer['last_name'] = $request->last_name;
+            $customer['dni'] = $request->dni;
+            $customer['email'] = $request->email;
+            $customer['city'] = $request->city;
+            $customer['direction'] = $request->address;
+            $customer['phone'] = $request->phone;
+            $data = Customer::where("id",$id)->update($customer);
+            $response['data'] = $data;
+            $response['message'] = "update successful";
+            $response['success'] = true;
+        }catch (\Exception $e) {
+            $response['message'] = $e->getMessage();
+            $response['success'] = false;
+        }
+
+        return response()->json($response);
     }
 
     /**
@@ -129,5 +157,16 @@ class CustomerController extends Controller
     public function destroy($id)
     {
         //
+        try {
+            $data = Customer::where("id",$id)->delete();
+            $response['data'] = $data;
+            $response['message'] = "Delete successful";
+            $response['success'] = true;
+        }catch (\Exception $e) {
+            $response['message'] = $e->getMessage();
+            $response['success'] = false;
+        }
+
+        return response()->json($response);
     }
 }
